@@ -294,3 +294,20 @@ Ejemplo de ruta: `http://localhost:3000/api/getType`
   ```
 
 </details>
+
+# Test
+
+Se usa la libreria [Jest](https://jestjs.io/) y [SuperTest](https://github.com/visionmedia/supertest)
+
+
+```
+npm i jest cross-env -D
+```
+
+Agregar en el package.json: 
+
+```
+"jest": {
+  "testEnvironment": "node"
+}
+```

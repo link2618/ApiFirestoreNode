@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "cross-env NODE_ENV=development nodemon -r dotenv/config app.js",
+    "start": "cross-env NODE_ENV=production node app.js",
+    "test": "cross-env NODE_ENV=test jest --verbose --silent --detectOpenHandles",
+    "test:watch": "npm run test -- --watch"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +20,12 @@
     "moment": "^2.29.1"
   },
   "devDependencies": {
-    "dotenv": "^10.0.0"
+    "cross-env": "^7.0.3",
+    "dotenv": "^10.0.0",
+    "jest": "^27.0.4",
+    "supertest": "^6.1.3"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }
