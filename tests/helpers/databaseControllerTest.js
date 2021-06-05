@@ -53,8 +53,19 @@ class Database {
     async createCollection(collectionPath) {
         const collectionRef = db.collection(collectionPath)
 
-        for (let i = 0; i < vehicleType.length; i++) {
-            const element = vehicleType[i];
+        let data
+
+        switch (collectionPath) {
+            case 'vehicleType':
+                data = vehicleType
+                break;
+        
+            default:
+                break;
+        }
+
+        for (let i = 0; i < data.length; i++) {
+            const element = data[i];
             await collectionRef.add(element)
         }
         

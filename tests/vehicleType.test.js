@@ -8,18 +8,7 @@ const app = server.app
 const api = supertest(app)
 
 const OLD_ENV = process.env;
-
-// const configEnvironment = () => {
-//     process.env.PORT=4000
-//     // process.env.DATE_FORMAT='DD-MM-YYYY HH:mm:ss'
-
-//     process.env.APIKEY= OLD_ENV.APIKEY_TEST
-//     process.env.AUTH_DOMAIN= OLD_ENV.AUTH_DOMAIN_TEST
-//     process.env.PROJECT_ID= OLD_ENV.PROJECT_ID_TEST
-//     process.env.STORAGE_BUCKET= OLD_ENV.STORAGE_BUCKET_TEST
-//     process.env.MESSAGING_SENDER_ID= OLD_ENV.MESSAGING_SENDER_ID_TEST
-//     process.env.APP_ID= OLD_ENV.APP_ID_TEST
-// }
+const idEdit = []
 
 beforeAll( async () => {
     jest.resetModules()
@@ -51,7 +40,7 @@ describe('GET vehicleType', () => {
     })
 })
 
-describe('POST vehicleType', () => {
+describe('POST vehicleType createType', () => {
     const URL = '/api/vehicleType/createType'
 
     const data = {
@@ -60,13 +49,13 @@ describe('POST vehicleType', () => {
         current_capacity: 0
     }
 
-    test('createType Se espera status 400 al no enviar data', async () => {
+    test('Se espera status 400 al no enviar data', async () => {
         await api.post(URL)
             .expect(400)
             .expect('Content-Type', /application\/json/)
     })
 
-    test('createType Se valida si no deja registrar tipo existente status 200', async () => {
+    test('Se valida si no deja registrar tipo existente status 200', async () => {
         await api.post(URL)
             .send(data)
             .set('Accept', 'application/json')
@@ -74,13 +63,62 @@ describe('POST vehicleType', () => {
             .expect('Content-Type', /application\/json/)
     })
 
-    test('createType Se valida si no deja registrar tipo existente "Ya esta registrado"', async () => {
+    test('Se valida si no deja registrar tipo existente "Ya esta registrado"', async () => {
         const response = await api.post(URL)
             .send(data)
             .set('Accept', 'application/json')
             .expect('Content-Type', /application\/json/)
 
         expect(response.body.message).toBe(`Ya esta registrado '${data.type_name}'`)
+    })
+
+    test('Se valida si el registro de un nuevo tipo retorna 201, si contiene data y el nombre este en mayuscula', async () => {
+        const newType = {
+            type_name: "nuevo",
+            maximum_capacity: 20,
+            current_capacity: 0
+        }
+        const response = await api.post(URL)
+            .send(newType)
+            .set('Accept', 'application/json')
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+        expect(response.body.data)
+        expect(response.body.data.type_name).toBe(newType.type_name.toUpperCase())
+
+        // Se guarda id para prueba de editar
+        idEdit.push(response.body.data.id)
+    })
+
+})
+
+describe('PUT vehicleType updateType', () => {
+    let URL = `/api/vehicleType/updateType/`
+
+    const dataUpdateType = {
+        maximum_capacity: 10
+    }
+
+    test('Se valida resultado de actualizacion status 200 y message "Success update"', async () => {
+        URL = `${URL}${idEdit[0]}`
+        const response = await api.put(URL)
+            .send(dataUpdateType)
+            .set('Accept', 'application/json')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+        expect(response.body).toStrictEqual({ ok: true, message: 'Success update' })
+    })
+})
+
+describe('DELETE vehicleType deleteType', () => {
+    let URL = `/api/vehicleType/deleteType/`
+
+    test('Se valida resultado de eliminar status 200 y message "Success delete"', async () => {
+        URL = `${URL}${idEdit[0]}`
+        const response = await api.delete(URL)
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+        expect(response.body).toStrictEqual({ ok: true, message: 'Success delete' })
     })
 })
 
