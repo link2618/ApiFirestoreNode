@@ -137,7 +137,7 @@ vehicleParking.updatevehicleParking = async (req, res) => {
         const snap = await vehicleParkingRef.where('plates_vehicle', '==', plates_vehicle.toUpperCase()).get()
         const existe = await retornarDatos(snap)
 
-        if(existe.length > 0) 
+        if(existe.length > 0 && id !== existe[0].id) 
             return res.json({ ok: true, message: `Ya esta registrado '${plates_vehicle}'` })
 
         await vehicleParkingRef.doc(id).update(update)
