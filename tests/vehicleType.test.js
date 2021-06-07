@@ -18,8 +18,6 @@ beforeAll( async () => {
     // Se borra la informacion de la BD de TEST
     const database = new Database()
     await database.deleteCollection('vehicleType')
-    await database.deleteCollection('vehicleParking')
-    await database.deleteCollection('purse')
     
     // Se agrega data por default
     await database.createCollection('vehicleType')
